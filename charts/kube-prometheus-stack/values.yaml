@@ -41,13 +41,13 @@ crds:
     forceConflicts: false
     image:
       busybox:
-        registry: docker.io
+        registry: docker-proxy.geekz.cn:81
         repository: busybox
         tag: "latest"
         sha: ""
         pullPolicy: IfNotPresent
       kubectl:
-        registry: registry.k8s.io
+        registry: docker-proxy-k8s.geekz.cn:81
         repository: kubectl
         tag: ""  # defaults to the Kubernetes version
         sha: ""
@@ -915,7 +915,7 @@ alertmanager:
     ## Image of Alertmanager
     ##
     image:
-      registry: quay.io
+      registry: docker-proxy-quay.geekz.cn:81
       repository: prometheus/alertmanager
       tag: v0.30.0
       sha: ""
@@ -1025,7 +1025,7 @@ alertmanager:
     storage:
       volumeClaimTemplate:
         spec:
-          storageClassName: alicloud-nas-subpath-prometheus
+          storageClassName: nfs-prom
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
@@ -1227,6 +1227,8 @@ alertmanager:
 ## Using default values from https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
 ##
 grafana:
+  image:
+    registry: docker-proxy.geekz.cn:81
   enabled: true
   namespaceOverride: ""
 
@@ -1374,7 +1376,7 @@ grafana:
   persistence:
     enabled: true
     type: pvc
-    storageClassName: "alicloud-nas-subpath-prometheus"
+    storageClassName: "nfs-prom"
     accessModes:
       - ReadWriteOnce
     size: 20Gi
@@ -1386,6 +1388,8 @@ grafana:
     autoMount: true
 
   sidecar:
+    image:
+      registry: docker-proxy-quay.geekz.cn:81
     dashboards:
       enabled: true
       label: grafana_dashboard
@@ -1407,6 +1411,8 @@ grafana:
       provider:
         allowUiUpdates: false
     datasources:
+      image:
+        registry: docker-proxy-quay.geekz.cn:81
       enabled: true
       defaultDatasourceEnabled: true
       isDefaultDatasource: true
@@ -1461,6 +1467,10 @@ grafana:
         uid: alertmanager
         handleGrafanaManagedAlerts: false
         implementation: prometheus
+
+  initChownData:
+    image:
+      registry: docker-proxy.geekz.cn:81
 
   extraConfigmapMounts: []
   # - name: certs-configmap
@@ -2479,7 +2489,8 @@ kubeStateMetrics:
 kube-state-metrics:
   ## set to true to add the release label so scraping of the servicemonitor with kube-prometheus-stack works out of the box
   releaseLabel: true
-
+  image:
+    registry: docker-proxy-k8s.geekz.cn:81
   ## Enable scraping via kubernetes-service-endpoints
   ## Disabled by default as we service monitor is enabled below
   ##
@@ -2520,6 +2531,8 @@ nodeExporter:
 ## Configuration for prometheus-node-exporter subchart
 ##
 prometheus-node-exporter:
+  image:
+    registry: docker-proxy-quay.geekz.cn:81
   namespaceOverride: ""
   podLabels:
     ## Add the 'node-exporter' label to be used by serviceMonitor and podMonitor to match standard common usage in rules and grafana dashboards
@@ -2800,7 +2813,7 @@ prometheusOperator:
       ## Prometheus-operator webhook image
       ##
       image:
-        registry: quay.io
+        registry: docker-proxy-quay.geekz.cn:81
         repository: prometheus-operator/admission-webhook
         # if not set appVersion field from Chart.yaml is used
         tag: ""
@@ -2912,9 +2925,9 @@ prometheusOperator:
     patch:
       enabled: true
       image:
-        registry: ghcr.io
+        registry: docker-proxy-k8s.geekz.cn:81
         repository: jkroepke/kube-webhook-certgen
-        tag: 1.7.4
+        tag: v1.7.4  # latest tag: https://github.com/kubernetes/ingress-nginx/blob/main/images/kube-webhook-certgen/TAG
         sha: ""
         pullPolicy: IfNotPresent
       resources: {}
@@ -3302,7 +3315,7 @@ prometheusOperator:
   ## Prometheus-operator image
   ##
   image:
-    registry: quay.io
+    registry: docker-proxy-quay.geekz.cn:81
     repository: prometheus-operator/prometheus-operator
     # if not set appVersion field from Chart.yaml is used
     tag: ""
@@ -3329,7 +3342,7 @@ prometheusOperator:
   ##
   prometheusConfigReloader:
     image:
-      registry: quay.io
+      registry: docker-proxy-quay.geekz.cn:81
       repository: prometheus-operator/prometheus-config-reloader
       # if not set appVersion field from Chart.yaml is used
       tag: ""
@@ -3350,7 +3363,7 @@ prometheusOperator:
   ## Thanos side-car image when configured
   ##
   thanosImage:
-    registry: quay.io
+    registry: docker-proxy-quay.geekz.cn:81
     repository: thanos/thanos
     tag: v0.40.1
     sha: ""
@@ -4004,7 +4017,7 @@ prometheus:
     ## Image of Prometheus.
     ##
     image:
-      registry: quay.io
+      registry: docker-proxy-quay.geekz.cn:81
       repository: prometheus/prometheus
       tag: v3.8.1
       sha: ""
@@ -4051,7 +4064,7 @@ prometheus:
 
     ## enable --web.enable-remote-write-receiver flag on prometheus-server
     ##
-    enableRemoteWriteReceiver: false
+    enableRemoteWriteReceiver: true
 
     ## Name of the external label used to denote replica name
     ##
@@ -4332,7 +4345,7 @@ prometheus:
     ##
       volumeClaimTemplate:
         spec:
-          storageClassName: alicloud-nas-subpath-prometheus
+          storageClassName: nfs-prom
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
@@ -5107,7 +5120,7 @@ thanosRuler:
     ## Image of ThanosRuler
     ##
     image:
-      registry: quay.io
+      registry: docker-proxy-quay.geekz.cn:81
       repository: thanos/thanos
       tag: v0.40.1
       sha: ""
