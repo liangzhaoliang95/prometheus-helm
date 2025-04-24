@@ -1,0 +1,14 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  annotations: {}
+  name: alicloud-nas-subpath-prometheus
+mountOptions:
+  - 'nolock,tcp,noresvport'
+  - vers=3
+parameters:
+  server: '08c3c4a481-fqi64.cn-hangzhou.nas.aliyuncs.com:/prometheus/'
+  volumeAs: subpath
+provisioner: nasplugin.csi.alibabacloud.com
+reclaimPolicy: Retain
+volumeBindingMode: Immediate
