@@ -1,0 +1,111 @@
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  annotations:
+    k8s.kuboard.cn/storageType: nfs_client_provisioner
+  name: nfs-prom
+parameters:
+  archiveOnDelete: 'false'
+provisioner: nfs-nfs-prom
+reclaimPolicy: Retain
+volumeBindingMode: WaitForFirstConsumer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  labels:
+    app: eip-nfs-nfs-prom
+  name: eip-nfs-nfs-prom
+  namespace: kube-system
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: eip-nfs-nfs-prom
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: eip-nfs-nfs-prom
+    spec:
+      containers:
+        - env:
+            - name: PROVISIONER_NAME
+              value: nfs-nfs-prom
+            - name: NFS_SERVER
+              value: 08c3c4a481-fqi64.cn-hangzhou.nas.aliyuncs.com
+            - name: NFS_PATH
+              value: /mnt/user/k8s-nfs
+          image: 'eipwork/nfs-subdir-external-provisioner:v4.0.2'
+          imagePullPolicy: IfNotPresent
+          name: nfs-client-provisioner
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /persistentvolumes
+              name: nfs-client-root
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: eip-nfs-client-provisioner
+      serviceAccountName: eip-nfs-client-provisioner
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: nfs-client-root
+          persistentVolumeClaim:
+            claimName: nfs-pvc-nfs-prom
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  annotations:
+    pv.kubernetes.io/bound-by-controller: 'yes'
+  finalizers:
+    - kubernetes.io/pv-protection
+  name: nfs-pv-nfs-prom
+spec:
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 500Gi
+  claimRef:
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    name: nfs-pvc-nfs-prom
+    namespace: kube-system
+  nfs:
+    path: /mnt/user/k8s-nfs
+    server: 08c3c4a481-fqi64.cn-hangzhou.nas.aliyuncs.com
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-storageclass-provisioner
+  volumeMode: Filesystem
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    pv.kubernetes.io/bind-completed: 'yes'
+  finalizers:
+    - kubernetes.io/pvc-protection
+  name: nfs-pvc-nfs-prom
+  namespace: kube-system
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 500Gi
+  storageClassName: nfs-storageclass-provisioner
+  volumeMode: Filesystem
+  volumeName: nfs-pv-nfs-prom
+
