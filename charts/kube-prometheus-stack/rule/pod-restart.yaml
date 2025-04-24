@@ -1,0 +1,31 @@
+# nonk8s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  annotations:
+    prometheus-operator-validated: 'true'
+  labels:
+    app: kube-prometheus-stack
+    release: rongke-prometheus
+  name: pod-error-alerts
+  namespace: monitoring
+spec:
+  groups:
+    - name: pod-error-alerts
+      rules:
+        - alert: PodErrorRestarts
+          annotations:
+            description: |
+              Pod {{ $labels.pod }} (Namespace: {{ $labels.namespace }}) 
+              重启了 {{ $value }} 次。
+              可能原因: CrashLoopBackOff、Killed 或配置错误。
+            runbook_url: >-
+              https://kubernetes.io/docs/tasks/debug/debug-application/debug-pod-replication-controller/#debugging-pods
+            summary: 'Pod {{ $labels.pod }} 重启 ({{ $value }} 次)'
+          expr: |
+            changes(kube_pod_container_status_restarts_total[1m]) > 0
+          labels:
+            severity: critical
+            alertinstance: '{{ $labels.namespace }}/{{ $labels.pod }}'
+
