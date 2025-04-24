@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alertmanager-webhook-adapter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alertmanager-webhook-adapter
+  template:
+    metadata:
+      labels:
+        app: alertmanager-webhook-adapter
+    spec:
+      containers:
+        - name: webhook
+          image: bougou/alertmanager-webhook-adapter:v1.1.8
+          command:
+            - /alertmanager-webhook-adapter
+            - --listen-address=:8090
+            - --signature=rongke
+            - --tmpl-lang=zh
+            - --debug=true
+          env:
+            - name: TZ
+              value: Asia/Shanghai
+          resources:
+            requests:
+              memory: 50Mi
+              cpu: 100m
+            limits:
+              memory: 250Mi
+              cpu: 500m
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alertmanager-webhook-adapter
+spec:
+  ports:
+    - port: 80
+      targetPort: 8090
+      protocol: TCP
+  selector:
+    app: alertmanager-webhook-adapter
+  sessionAffinity: None

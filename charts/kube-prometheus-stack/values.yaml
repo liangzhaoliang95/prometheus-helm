@@ -169,7 +169,7 @@ defaultRules:
   create: true
   rules:
     alertmanager: true
-    etcd: true
+    etcd: false
     configReloaders: true
     general: true
     k8sContainerCpuUsageSecondsTotal: true
@@ -183,17 +183,17 @@ defaultRules:
     kubeApiserverBurnrate: true
     kubeApiserverHistogram: true
     kubeApiserverSlos: true
-    kubeControllerManager: true
-    kubelet: true
-    kubeProxy: true
+    kubeControllerManager: false
+    kubelet: false
+    kubeProxy: false
     kubePrometheusGeneral: true
     kubePrometheusNodeRecording: true
     kubernetesApps: true
     kubernetesResources: true
     kubernetesStorage: true
     kubernetesSystem: true
-    kubeSchedulerAlerting: true
-    kubeSchedulerRecording: true
+    kubeSchedulerAlerting: false
+    kubeSchedulerRecording: false
     kubeStateMetrics: true
     network: true
     node: true
@@ -201,7 +201,7 @@ defaultRules:
     nodeExporterRecording: true
     prometheus: true
     prometheusOperator: true
-    windows: true
+    windows: false
 
   # Defines the operator for namespace selection in rules
   # Use "=~" to include namespaces matching the pattern (default)
@@ -532,17 +532,21 @@ alertmanager:
       - target_matchers:
           - 'alertname = InfoInhibitor'
     route:
-      group_by: ['namespace']
-      group_wait: 30s
-      group_interval: 5m
-      repeat_interval: 12h
-      receiver: 'null'
+      group_by: ['alertname']
+      group_wait: 10s
+      group_interval: 1m
+      repeat_interval: 1h
+      receiver: 'wecom.webhook'
       routes:
       - receiver: 'null'
         matchers:
           - alertname = "Watchdog"
     receivers:
     - name: 'null'
+    - name: "wecom.webhook"
+      webhook_configs:
+        - send_resolved: true
+          url: "http://alertmanager-webhook-adapter:80/webhook/send?channel_type=weixin&token=8f3be4a0-8cf1-4731-97a5-dc244f70d44d"
     templates:
     - '/etc/alertmanager/config/*.tmpl'
 
@@ -1018,14 +1022,14 @@ alertmanager:
     ## Storage is the definition of how storage will be used by the Alertmanager instances.
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/platform/storage.md
     ##
-    storage: {}
-    # volumeClaimTemplate:
-    #   spec:
-    #     storageClassName: gluster
-    #     accessModes: ["ReadWriteOnce"]
-    #     resources:
-    #       requests:
-    #         storage: 50Gi
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: alicloud-nas-subpath-prometheus
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 50Gi
     #     selector: {}
 
 
@@ -1367,15 +1371,15 @@ grafana:
 
   # # To make Grafana persistent (Using Statefulset)
   # #
-  # persistence:
-  #   enabled: true
-  #   type: sts
-  #   storageClassName: "storageClassName"
-  #   accessModes:
-  #     - ReadWriteOnce
-  #   size: 20Gi
-  #   finalizers:
-  #     - kubernetes.io/pvc-protection
+  persistence:
+    enabled: true
+    type: pvc
+    storageClassName: "alicloud-nas-subpath-prometheus"
+    accessModes:
+      - ReadWriteOnce
+    size: 20Gi
+    finalizers:
+      - kubernetes.io/pvc-protection
 
   serviceAccount:
     create: true
@@ -1892,7 +1896,7 @@ kubeControllerManager:
     #   component: kube-controller-manager
 
   serviceMonitor:
-    enabled: true
+    enabled: false
     ## Scrape interval. If not set, the Prometheus default scrape interval is used.
     ##
     interval: ""
@@ -1986,7 +1990,7 @@ coreDns:
     # selector:
     #   k8s-app: kube-dns
   serviceMonitor:
-    enabled: true
+    enabled: false
     ## Scrape interval. If not set, the Prometheus default scrape interval is used.
     ##
     interval: ""
@@ -2187,7 +2191,7 @@ kubeEtcd:
   ##   keyFile: /etc/prometheus/secrets/etcd-client-cert/etcd-client-key
   ##
   serviceMonitor:
-    enabled: true
+    enabled: false
     ## Scrape interval. If not set, the Prometheus default scrape interval is used.
     ##
     interval: ""
@@ -2262,7 +2266,7 @@ kubeEtcd:
 ## Component scraping kube scheduler
 ##
 kubeScheduler:
-  enabled: true
+  enabled: false
 
   # Overrides the job selector in Grafana dashboards and Prometheus rules
   # For k3s clusters, change to k3s-server
@@ -2292,7 +2296,7 @@ kubeScheduler:
     #   component: kube-scheduler
 
   serviceMonitor:
-    enabled: true
+    enabled: false
     ## Scrape interval. If not set, the Prometheus default scrape interval is used.
     ##
     interval: ""
@@ -2397,7 +2401,7 @@ kubeProxy:
     #   k8s-app: kube-proxy
 
   serviceMonitor:
-    enabled: true
+    enabled: false
     ## Scrape interval. If not set, the Prometheus default scrape interval is used.
     ##
     interval: ""
@@ -3118,7 +3122,7 @@ prometheusOperator:
     ## If true, the operator will create and maintain a service for scraping kubelets
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/helm/prometheus-operator/README.md
     ##
-    enabled: true
+    enabled: false
     namespace: kube-system
     selector: ""
     ## Use '{{ template "kube-prometheus-stack.fullname" . }}-kubelet' by default
@@ -4323,16 +4327,16 @@ prometheus:
     ## Prometheus StorageSpec for persistent data
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/platform/storage.md
     ##
-    storageSpec: {}
+    storageSpec:
     ## Using PersistentVolumeClaim
     ##
-    #  volumeClaimTemplate:
-    #    spec:
-    #      storageClassName: gluster
-    #      accessModes: ["ReadWriteOnce"]
-    #      resources:
-    #        requests:
-    #          storage: 50Gi
+      volumeClaimTemplate:
+        spec:
+          storageClassName: alicloud-nas-subpath-prometheus
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 50Gi
     #      selector: {}
 
     ## Using tmpfs volume
