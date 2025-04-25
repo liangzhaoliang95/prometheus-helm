@@ -326,6 +326,8 @@ additionalPrometheusRulesMap: {}
 
 ##
 global:
+  externalLabels:
+    release: lxz
   rbac:
     create: true
 
@@ -3920,7 +3922,9 @@ prometheus:
 
     ## WebTLSConfig defines the TLS parameters for HTTPS
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#webtlsconfig
-    web: {}
+    web:
+      httpConfig:
+        http2: false
 
     ## Exemplars related settings that are runtime reloadable.
     ## It requires to enable the exemplar storage feature to be effective.
@@ -3983,7 +3987,8 @@ prometheus:
 
     ## External labels to add to any time series or alerts when communicating with external systems
     ##
-    externalLabels: {}
+    externalLabels:
+      release-env: lxz
 
     ## enable --web.enable-remote-write-receiver flag on prometheus-server
     ##
@@ -4019,7 +4024,7 @@ prometheus:
     ## reflected in the running Pods. To change the secrets mounted into the Prometheus Pods, the object must be deleted and recreated
     ## with the new list of secrets.
     ##
-    secrets: []
+    secrets: ["prometheus-remote-auth"]
 
     ## ConfigMaps is a list of ConfigMaps in the same namespace as the Prometheus object, which shall be mounted into the Prometheus Pods.
     ## The ConfigMaps are mounted into /etc/prometheus/configmaps/.
