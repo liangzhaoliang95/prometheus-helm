@@ -326,8 +326,6 @@ additionalPrometheusRulesMap: {}
 
 ##
 global:
-  externalLabels:
-    release: lxz
   rbac:
     create: true
 
@@ -393,9 +391,6 @@ alertmanager:
   ## Deploy alertmanager
   ##
   enabled: true
-
-  # Optional: Override the namespace where Alertmanager will be deployed.
-  namespaceOverride: ""
 
   ## Annotations for Alertmanager
   ##
@@ -502,7 +497,6 @@ alertmanager:
     enabled: false
     minAvailable: 1
     maxUnavailable: ""
-    unhealthyPodEvictionPolicy: AlwaysAllow
 
   ## Alertmanager configuration directives
   ## ref: https://prometheus.io/docs/alerting/configuration/#configuration-file
@@ -1141,7 +1135,7 @@ alertmanager:
     containers: []
     # containers:
     # - name: oauth-proxy
-    #   image: quay.io/oauth2-proxy/oauth2-proxy:v7.9.0
+    #   image: quay.io/oauth2-proxy/oauth2-proxy:v7.8.2
     #   args:
     #   - --upstream=http://127.0.0.1:9093
     #   - --http-address=0.0.0.0:8081
@@ -1561,7 +1555,7 @@ kubelet:
   serviceMonitor:
     enabled: true
     ## Enable scraping /metrics from kubelet's service
-    kubelet: true
+    kubelet: false
 
     ## Attach metadata to discovered targets. Requires Prometheus v2.45 for endpoints created by the operator.
     ##
@@ -2192,7 +2186,7 @@ kubeEtcd:
 ## Component scraping kube scheduler
 ##
 kubeScheduler:
-  enabled: true
+  enabled: false
 
   ## If your kube scheduler is not deployed as a pod, specify IPs it can be found on
   ##
@@ -2218,7 +2212,7 @@ kubeScheduler:
     #   component: kube-scheduler
 
   serviceMonitor:
-    enabled: true
+    enabled: false
     ## Scrape interval. If not set, the Prometheus default scrape interval is used.
     ##
     interval: ""
@@ -2319,7 +2313,7 @@ kubeProxy:
     #   k8s-app: kube-proxy
 
   serviceMonitor:
-    enabled: true
+    enabled: false
     ## Scrape interval. If not set, the Prometheus default scrape interval is used.
     ##
     interval: ""
@@ -2667,11 +2661,9 @@ prometheusOperator:
       strategy: {}
 
       # Ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
-      podDisruptionBudget:
-        enabled: false
-        minAvailable: 1
-        maxUnavailable: ""
-        unhealthyPodEvictionPolicy: AlwaysAllow
+      podDisruptionBudget: {}
+        # maxUnavailable: 1
+        # minAvailable: 1
 
       ## Number of old replicasets to retain ##
       ## The default value is 10, 0 will garbage-collect old replicasets ##
@@ -2881,7 +2873,7 @@ prometheusOperator:
       image:
         registry: docker-proxy-k8s.geekz.cn:81
         repository: ingress-nginx/kube-webhook-certgen
-        tag: v1.5.3  # latest tag: https://github.com/kubernetes/ingress-nginx/blob/main/images/kube-webhook-certgen/TAG
+        tag: v1.5.2  # latest tag: https://github.com/kubernetes/ingress-nginx/blob/main/images/kube-webhook-certgen/TAG
         sha: ""
         pullPolicy: IfNotPresent
       resources: {}
@@ -3066,14 +3058,6 @@ prometheusOperator:
   ## Annotations to add to the operator pod
   ##
   podAnnotations: {}
-
-  ## Assign a podDisruptionBudget to the operator
-  ##
-  podDisruptionBudget:
-    enabled: false
-    minAvailable: 1
-    maxUnavailable: ""
-    unhealthyPodEvictionPolicy: AlwaysAllow
 
   ## Assign a PriorityClassName to pods if set
   # priorityClassName: ""
@@ -3319,7 +3303,7 @@ prometheusOperator:
   thanosImage:
     registry: docker-proxy-quay.geekz.cn:81
     repository: thanos/thanos
-    tag: v0.38.0
+    tag: v0.37.2
     sha: ""
 
   ## Set a Label Selector to filter watched prometheus and prometheusAgent
@@ -3617,7 +3601,6 @@ prometheus:
     enabled: false
     minAvailable: 1
     maxUnavailable: ""
-    unhealthyPodEvictionPolicy: AlwaysAllow
 
   # Ingress exposes thanos sidecar outside the cluster
   thanosIngress:
@@ -3944,9 +3927,7 @@ prometheus:
 
     ## WebTLSConfig defines the TLS parameters for HTTPS
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#webtlsconfig
-    web:
-      httpConfig:
-        http2: false
+    web: {}
 
     ## Exemplars related settings that are runtime reloadable.
     ## It requires to enable the exemplar storage feature to be effective.
@@ -3969,7 +3950,7 @@ prometheus:
     image:
       registry: docker-proxy-quay.geekz.cn:81
       repository: prometheus/prometheus
-      tag: v3.3.1
+      tag: v3.2.1
       sha: ""
 
     ## Tolerations for use with node taints
@@ -4009,12 +3990,11 @@ prometheus:
 
     ## External labels to add to any time series or alerts when communicating with external systems
     ##
-    externalLabels:
-      release-env: lxz
+    externalLabels: {}
 
     ## enable --web.enable-remote-write-receiver flag on prometheus-server
     ##
-    enableRemoteWriteReceiver: true
+    enableRemoteWriteReceiver: false
 
     ## Name of the external label used to denote replica name
     ##
@@ -4273,7 +4253,15 @@ prometheus:
 
     ## The remote_write spec configuration for Prometheus.
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#remotewritespec
-    remoteWrite: []
+    remoteWrite:
+      - url: https://prometheus.geekz.cn:81/api/v1/write
+        basicAuth:
+          username:
+            name: prometheus-remote-auth
+            key: username
+          password:
+            name: prometheus-remote-auth
+            key: password
     # - url: http://remote1/push
     ## additionalRemoteWrite is appended to remoteWrite
     additionalRemoteWrite: []
@@ -4477,7 +4465,7 @@ prometheus:
     containers: []
     # containers:
     # - name: oauth-proxy
-    #   image: quay.io/oauth2-proxy/oauth2-proxy:v7.9.0
+    #   image: quay.io/oauth2-proxy/oauth2-proxy:v7.8.2
     #   args:
     #   - --upstream=http://127.0.0.1:9090
     #   - --http-address=0.0.0.0:8081
@@ -4843,7 +4831,6 @@ thanosRuler:
     enabled: false
     minAvailable: 1
     maxUnavailable: ""
-    unhealthyPodEvictionPolicy: AlwaysAllow
 
   ingress:
     enabled: false
@@ -5050,7 +5037,7 @@ thanosRuler:
     image:
       registry: docker-proxy-quay.geekz.cn:81
       repository: thanos/thanos
-      tag: v0.38.0
+      tag: v0.37.2
       sha: ""
 
     ## Namespaces to be selected for PrometheusRules discovery.
@@ -5343,10 +5330,8 @@ thanosRuler:
 ##
 cleanPrometheusOperatorObjectNames: false
 
-## Extra manifests to deploy.  Can be of type dict or list.
-## If dict, keys are ignored and only values are used.
-## Items contained within extraObjects can be defined as dict or string and are passed through tpl.
-extraManifests: null
+## Extra manifests to deploy as an array
+extraManifests: []
   # - apiVersion: v1
   #   kind: ConfigMap
   #   metadata:
@@ -5354,18 +5339,3 @@ extraManifests: null
   #     name: prometheus-extra
   #   data:
   #     extra-data: "value"
-  #
-  # can also be defined as a string, useful for templating field names
-  # - |
-  #   apiVersion: v1
-  #   kind: Secret
-  #   type: Opaque
-  #   metadata:
-  #     name: super-secret
-  #     labels:
-  #       {{- range $key, $value := .Values.commonLabels }}
-  #       {{ $key }}: {{ $value }}
-  #       {{- end }}
-  #   data:
-  #     plaintext: Zm9vYmFy
-  #     templated: '{{ print "foobar" | upper | b64enc }}'
