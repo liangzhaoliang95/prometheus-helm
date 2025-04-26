@@ -331,8 +331,6 @@ additionalPrometheusRulesMap: {}
 
 ##
 global:
-  externalLabels:
-    release: lxz
   rbac:
     create: true
 
@@ -534,15 +532,15 @@ alertmanager:
       - target_matchers:
           - 'alertname = InfoInhibitor'
     route:
-      group_by: ['alertname']
+      group_by: ['alertname', 'severity', 'cluster']  # 按这三个标签分组
       group_wait: 10s
       group_interval: 1m
       repeat_interval: 1h
-      receiver: 'wecom.webhook'
+      receiver: 'wecom.webhook'  # 默认接收器（但会被路由规则覆盖）
       routes:
-      - receiver: 'null'
-        matchers:
-          - alertname = "Watchdog"
+        # 1. 静默 Watchdog 告警（发送到 null 接收器）
+        - receiver: 'null'
+          matchers:
     receivers:
     - name: 'null'
     - name: "wecom.webhook"
@@ -4093,7 +4091,7 @@ prometheus:
     ## External labels to add to any time series or alerts when communicating with external systems
     ##
     externalLabels:
-      release-env: lxz
+      cluster: lxz
 
     ## enable --web.enable-remote-write-receiver flag on prometheus-server
     ##
