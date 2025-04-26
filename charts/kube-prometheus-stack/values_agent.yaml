@@ -390,7 +390,7 @@ alertmanager:
 
   ## Deploy alertmanager
   ##
-  enabled: true
+  enabled: false
 
   ## Annotations for Alertmanager
   ##
@@ -538,7 +538,7 @@ alertmanager:
       group_wait: 10s
       group_interval: 1m
       repeat_interval: 1h
-      receiver: 'wecom.webhook'
+      receiver: 'null'
       routes:
       - receiver: 'null'
         matchers:
@@ -3073,7 +3073,7 @@ prometheusOperator:
     ## If true, the operator will create and maintain a service for scraping kubelets
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/helm/prometheus-operator/README.md
     ##
-    enabled: false
+    enabled: true
     namespace: kube-system
     selector: ""
     ## Use '{{ template "kube-prometheus-stack.fullname" . }}-kubelet' by default
@@ -3990,7 +3990,8 @@ prometheus:
 
     ## External labels to add to any time series or alerts when communicating with external systems
     ##
-    externalLabels: {}
+    externalLabels:
+      cluster: lxz
 
     ## enable --web.enable-remote-write-receiver flag on prometheus-server
     ##
