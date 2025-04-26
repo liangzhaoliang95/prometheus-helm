@@ -541,6 +541,19 @@ alertmanager:
         # 1. 静默 Watchdog 告警（发送到 null 接收器）
         - receiver: 'null'
           matchers:
+            - alertname = "Watchdog"
+
+        # 2. 只处理 severity=critical 的告警（发送到 wecom.webhook）
+        - receiver: 'wecom.webhook'
+          matchers:
+            - severity = "critical"
+          continue: false  # 匹配后不再继续后续路由
+
+        # 3. 其他告警默认静默（可选）
+        - receiver: 'null'
+          matchers:
+            - severity != "critical"  # 非 critical 告警静默
+          continue: false
     receivers:
     - name: 'null'
     - name: "wecom.webhook"
