@@ -9,8 +9,9 @@ serviceAccount:
   name:
 
 replicaCount: 1
+
 image:
-  repository: oliver006/redis_exporter
+  repository: docker-proxy.geekz.cn:81/oliver006/redis_exporter
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -42,8 +43,8 @@ service:
   labels:
     {}
     # prometheus.io/path: /metrics
-    # prometheus.io/port: "9121"
-    # prometheus.io/scrape: "true"
+  # prometheus.io/port: "9121"
+  # prometheus.io/scrape: "true"
 resources: {}
 
 nodeSelector: {}
@@ -66,11 +67,12 @@ extraManifests:
   #     extra-data: "value"
 
 # If serviceMonitor.multipleTarget is enabled, this configuration is actually not used
-redisAddress: redis://myredis:6379
+redisAddress: redis://192.168.10.2:6379
 
 # deployment additional annotations and labels
 annotations: {}
-labels: {}
+labels:
+  release: "rongke-prometheus"
 #  prometheus.io/path: /metrics
 #  prometheus.io/port: "9121"
 #  prometheus.io/scrape: "true"
@@ -121,7 +123,7 @@ redisTlsConfig:
 
 serviceMonitor:
   # When set true then use a ServiceMonitor to configure scraping
-  enabled: false
+  enabled: true
   apiVersion: "monitoring.coreos.com/v1"
   multipleTarget: false
   targets: []
@@ -148,11 +150,14 @@ serviceMonitor:
   # Please set telemetryPath to /scrape if you are using multiple targets
   # telemetryPath: /metrics
   # Set labels for the ServiceMonitor, use this to define your scrape label for Prometheus Operator
-  # labels:
+  labels:
+    release: "rongke-prometheus"
   # Set timeout for scrape
   # timeout: 10s
   # Set relabel_configs as per https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config
-  # relabelings: []
+  relabelings:
+    - targetLabel: cluster
+      replacement: "lxz"
   # Set of labels to transfer on the Kubernetes Service onto the target.
   # targetLabels: []
   # metricRelabelings: []
@@ -210,7 +215,7 @@ prometheusRule:
 
 auth:
   # Use password authentication
-  enabled: false
+  enabled: true
   # Use existing secret (ignores redisPassword)
   secret:
     name: ""
