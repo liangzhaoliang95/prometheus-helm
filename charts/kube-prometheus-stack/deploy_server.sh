@@ -4,12 +4,20 @@ helm repo add prometheus-community https://helm.geekz.cn:81/repository/helm-prox
 helm repo update
 echo "prometheus-community repo added and updated"
 
-cp values.yaml values_temp.yaml
+cp values_server.yaml values_temp.yaml
 
 # 将nfs-prom替换为nfs-temp
-sed -i 's/nfs-prom/nfs-temp/g' values_temp.yaml
-# 调整全局标签集群名称
-sed -i 's/lxz/lxz/g' values_temp.yaml
+# 判断如果是macos系统，则使用gsed命令
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  sed -i "" 's/nfs-prom/nfs-temp/g' values_temp.yaml
+  # 调整全局标签集群名称
+  sed -i "" 's/lxz/lxz/g' values_temp.yaml
+else
+  sed -i 's/nfs-prom/nfs-temp/g' values_temp.yaml
+  # 调整全局标签集群名称
+  sed -i 's/lxz/lxz/g' values_temp.yaml
+fi
+
 
 echo "start installing prometheus stack"
 
@@ -18,3 +26,8 @@ helm upgrade --install rongke-prometheus prometheus-community/kube-prometheus-st
 echo "prometheus stack installed"
 
 rm -rf values_temp.yaml
+
+# 对中心集群的服务监控进行修改 添加全局cluster标签
+kubectl get servicemonitor -A -o yaml | \
+  yq eval '(.items[].spec.endpoints[] |= .relabelings += [{"targetLabel": "cluster", "replacement": "lxz"}])' | \
+  kubectl apply -f -
