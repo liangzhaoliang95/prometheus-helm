@@ -1241,7 +1241,7 @@ grafana:
   ## Timezone for the default dashboards
   ## Other options are: browser or a specific timezone, i.e. Europe/Luxembourg
   ##
-  defaultDashboardsTimezone: utc
+  defaultDashboardsTimezone: Asia/Shanghai
 
   ## Editable flag for the default dashboards
   ##
@@ -4258,6 +4258,9 @@ prometheus:
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#remotewritespec
     remoteWrite:
       - url: https://prometheus.geekz.cn:81/api/v1/write
+        writeRelabelConfigs:
+          - action: labeldrop
+            regex: "prometheus|prometheus_replica"
         basicAuth:
           username:
             name: prometheus-remote-auth
