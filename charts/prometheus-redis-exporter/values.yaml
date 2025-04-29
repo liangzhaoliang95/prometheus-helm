@@ -67,7 +67,7 @@ extraManifests:
   #     extra-data: "value"
 
 # If serviceMonitor.multipleTarget is enabled, this configuration is actually not used
-redisAddress: redis://192.168.10.2:6379
+redisAddress: redis://P_REDIS_HOST_P:6379
 
 # deployment additional annotations and labels
 annotations: {}
@@ -157,7 +157,7 @@ serviceMonitor:
   # Set relabel_configs as per https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config
   relabelings:
     - targetLabel: cluster
-      replacement: "lxz"
+      replacement: "P_LABEL_CLUSTER_P"
   # Set of labels to transfer on the Kubernetes Service onto the target.
   # targetLabels: []
   # metricRelabelings: []
@@ -221,7 +221,7 @@ auth:
     name: ""
     key: ""
   # Redis password (when not stored in a secret)
-  redisPassword: ""
+  redisPassword: "P_REDIS_PASSWORD_P"
   # Redis user (version 6.X and above)
   redisUser: ""
   # Redis password file (e.g., https://github.com/oliver006/redis_exporter/blob/v1.27.0/contrib/sample-pwd-file.json)
