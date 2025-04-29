@@ -34,5 +34,5 @@ kubectl apply -f ./secrets/prometheus_remote_secrets.yaml -n monitoring
 
 # 对中心集群的服务监控进行修改 添加全局cluster标签
 kubectl get servicemonitor -A -o yaml | \
-  yq eval '(.items[].spec.endpoints[] |= .relabelings += [{"targetLabel": "cluster", "replacement": "lxz"}])' | \
+  yq eval '(.items[].spec.endpoints[].relabelings |= (select(. != null) | map(select(.targetLabel != "cluster")) + [{"targetLabel": "cluster", "replacement": "lxz"}]))' | \
   kubectl apply -f -
