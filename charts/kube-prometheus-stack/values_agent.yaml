@@ -169,7 +169,7 @@ defaultRules:
   create: true
   rules:
     alertmanager: true
-    etcd: false
+    etcd: true
     configReloaders: true
     general: true
     k8sContainerCpuUsageSecondsTotal: true
@@ -183,17 +183,17 @@ defaultRules:
     kubeApiserverBurnrate: true
     kubeApiserverHistogram: true
     kubeApiserverSlos: true
-    kubeControllerManager: false
-    kubelet: false
-    kubeProxy: false
+    kubeControllerManager: true
+    kubelet: true
+    kubeProxy: true
     kubePrometheusGeneral: true
     kubePrometheusNodeRecording: true
     kubernetesApps: true
     kubernetesResources: true
     kubernetesStorage: true
     kubernetesSystem: true
-    kubeSchedulerAlerting: false
-    kubeSchedulerRecording: false
+    kubeSchedulerAlerting: true
+    kubeSchedulerRecording: true
     kubeStateMetrics: true
     network: true
     node: true
@@ -390,7 +390,7 @@ alertmanager:
 
   ## Deploy alertmanager
   ##
-  enabled: false
+  enabled: true
 
   ## Annotations for Alertmanager
   ##
@@ -1027,7 +1027,7 @@ alertmanager:
     storage:
       volumeClaimTemplate:
         spec:
-          storageClassName: nfs-prom
+          storageClassName: P_STORAGE_CLASS_P
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
@@ -1302,7 +1302,7 @@ grafana:
   persistence:
     enabled: true
     type: pvc
-    storageClassName: "nfs-prom"
+    storageClassName: "P_STORAGE_CLASS_P"
     accessModes:
       - ReadWriteOnce
     size: 20Gi
@@ -3993,7 +3993,7 @@ prometheus:
     ## External labels to add to any time series or alerts when communicating with external systems
     ##
     externalLabels:
-      cluster: lxz
+      cluster: P_LABEL_CLUSTER_P
 
     ## enable --web.enable-remote-write-receiver flag on prometheus-server
     ##
@@ -4289,7 +4289,7 @@ prometheus:
       ##
       volumeClaimTemplate:
         spec:
-          storageClassName: nfs-prom
+          storageClassName: P_STORAGE_CLASS_P
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
