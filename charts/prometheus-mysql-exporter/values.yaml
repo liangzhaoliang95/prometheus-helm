@@ -49,7 +49,7 @@ serviceMonitor:
   # Set relabel_configs as per https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config
   relabelings:
     - targetLabel: cluster
-      replacement: "lxz"
+      replacement: "P_LABEL_CLUSTER_P"
   # Enable multi target scraping.
   multipleTarget:
     enabled: false
@@ -183,12 +183,12 @@ collectors: {}
 # mysql connection params which build the my.cnf config
 mysql:
   db: ""
-  host: "192.168.10.2"
+  host: "P_MYSQL_HOST_P"
   # config my.cnf https://dev.mysql.com/doc/c-api/8.0/en/mysql-options.html
   additionalConfig:
     # - connect-timeout=5
     # - debug
-  pass: "password"
+  pass: "P_MYSQL_PASSWORD_P"
   port: 3306
   protocol: ""
   user: "root"
