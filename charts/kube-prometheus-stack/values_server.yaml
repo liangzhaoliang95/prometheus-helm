@@ -169,7 +169,7 @@ defaultRules:
   create: true
   rules:
     alertmanager: true
-    etcd: true
+    etcd: false
     configReloaders: true
     general: true
     k8sContainerCpuUsageSecondsTotal: true
@@ -183,9 +183,9 @@ defaultRules:
     kubeApiserverBurnrate: true
     kubeApiserverHistogram: true
     kubeApiserverSlos: true
-    kubeControllerManager: true
+    kubeControllerManager: false
     kubelet: true
-    kubeProxy: true
+    kubeProxy: false
     kubePrometheusGeneral: true
     kubePrometheusNodeRecording: true
     kubernetesApps: true
@@ -2013,7 +2013,7 @@ coreDns:
     # selector:
     #   k8s-app: kube-dns
   serviceMonitor:
-    enabled: false
+    enabled: true
     ## Scrape interval. If not set, the Prometheus default scrape interval is used.
     ##
     interval: ""
@@ -2424,7 +2424,7 @@ kubeProxy:
     #   k8s-app: kube-proxy
 
   serviceMonitor:
-    enabled: true
+    enabled: false
     ## Scrape interval. If not set, the Prometheus default scrape interval is used.
     ##
     interval: ""
@@ -3148,7 +3148,7 @@ prometheusOperator:
     ## If true, the operator will create and maintain a service for scraping kubelets
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/helm/prometheus-operator/README.md
     ##
-    enabled: false
+    enabled: true
     namespace: kube-system
     selector: ""
     ## Use '{{ template "kube-prometheus-stack.fullname" . }}-kubelet' by default
