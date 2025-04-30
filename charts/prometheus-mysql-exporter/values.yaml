@@ -189,9 +189,9 @@ mysql:
     # - connect-timeout=5
     # - debug
   pass: "P_MYSQL_PASSWORD_P"
-  port: 3306
+  port: P_MYSQL_PORT_P
   protocol: ""
-  user: "root"
+  user: "P_MYSQL_USER_P"
   # secret with full config my.cnf
   existingConfigSecret:
     name: ""
