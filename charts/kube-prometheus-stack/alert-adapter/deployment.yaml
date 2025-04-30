@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: webhook
-          image: docker-proxy.geekz.cn:81/bougou/alertmanager-webhook-adapter:v1.1.8
+          image: docker-public.geekz.cn:81/alertmanager-webhook-adapter:rk_20250430_1
           command:
             - /alertmanager-webhook-adapter
             - --listen-address=:8090
