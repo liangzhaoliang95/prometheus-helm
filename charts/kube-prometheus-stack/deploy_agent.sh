@@ -3,7 +3,7 @@
 storageClass=$1
 clusterLabel=$2
 
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo add prometheus-community https://helm.geekz.cn:81/repository/helm-proxy
 helm repo update
 echo "prometheus-community repo added and updated"
 
