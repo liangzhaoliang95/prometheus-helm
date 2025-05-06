@@ -1,0 +1,56 @@
+# external-node-exporters-endpoints.yaml
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: node-exporters  # 必须与 Service 同名
+  namespace: monitoring         # 建议与 Prometheus Operator 同命名空间
+subsets:
+  - addresses:
+      - ip: 192.168.10.2          # 替换为第一台节点的内网 IP
+      - ip: 192.168.10.12          # 替换为第二台节点的内网 IP
+    ports:
+      - name: http-metrics
+        port: 9100                 # node-exporter 默认端口
+        protocol: TCP
+---
+# node-exporters-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-exporters  # 必须与 Endpoints 同名
+  namespace: monitoring
+  labels:
+    app: node-exporter          # 用于 ServiceMonitor 匹配
+    jobLabel: node-exporter
+spec:
+  ports:
+    - name: http-metrics
+      port: 9100                  # Service 暴露的端口
+      targetPort: 9100            # 对应 Endpoints 中的端口ø
+      protocol: TCP
+  clusterIP: None               # 设为 None，因为实际 IP 在 Endpoints 中定义
+---
+# node-exporters-servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: node-exporter
+  namespace: monitoring
+  labels:
+    release: rongke-prometheus  # 必须匹配 Prometheus 的 selector
+spec:
+  jobLabel: jobLabel
+  endpoints:
+    - port: http-metrics           # 对应 Service 中的端口名
+      interval: 30s
+      path: /metrics
+      relabelings:
+        - action: replace
+          replacement: lxz
+          targetLabel: cluster
+  selector:
+    matchLabels:
+      app: node-exporter         # 匹配 Service 的标签
+  namespaceSelector:
+    matchNames:
+      - monitoring                # 限定在指定命名空间
