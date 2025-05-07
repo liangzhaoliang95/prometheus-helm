@@ -1,0 +1,42 @@
+# node-exporters-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: rongke-upime-exporter
+  namespace: szgyyq-dev
+  labels:
+    app: rongke-upime-exporter
+    jobLabel: rongke-upime-exporter
+spec:
+  ports:
+    - name: http-inner
+      port: 81                  # Service 暴露的端口
+      targetPort: 81            # 对应 Endpoints 中的端口ø
+      protocol: TCP
+  type: ClusterIP
+  selector:
+    app: balance
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: rongke-upime-exporter
+  namespace: monitoring
+  labels:
+    release: rongke-prometheus  # 必须匹配 Prometheus 的 selector
+spec:
+  jobLabel: jobLabel
+  endpoints:
+    - port: http-inner           # 对应 Service 中的端口名
+      interval: 30s
+      path: /metrics
+      relabelings:
+        - action: replace
+          replacement: rongke-private
+          targetLabel: cluster
+  selector:
+    matchLabels:
+      app: rongke-upime-exporter         # 匹配 Service 的标签
+  namespaceSelector:
+    matchNames:
+      - szgyyq-dev                # 限定在指定命名空间
