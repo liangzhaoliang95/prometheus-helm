@@ -1859,11 +1859,11 @@ prometheusOperator:
 
   ## Prometheus image to use for prometheuses managed by the operator
   ##
-  # prometheusDefaultBaseImage: docker-proxy-quay.geekz.cn:81/prometheus/prometheus
+    prometheusDefaultBaseImage: docker-proxy-quay.geekz.cn:81/prometheus/prometheus
 
   ## Alertmanager image to use for alertmanagers managed by the operator
   ##
-  # alertmanagerDefaultBaseImage: docker-proxy-quay.geekz.cn:81/prometheus/alertmanager
+    alertmanagerDefaultBaseImage: docker-proxy-quay.geekz.cn:81/prometheus/alertmanager
 
   ## Prometheus-config-reloader
   ##
