@@ -2,6 +2,7 @@
 
 storageClass=$1
 clusterLabel=$2
+version=$3
 
 helm repo add prometheus-community https://helm.geekz.cn:81/repository/helm-proxy
 helm repo update
@@ -23,7 +24,12 @@ fi
 
 echo "start installing prometheus agent"
 
-helm upgrade --install rongke-prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace -f values_temp.yaml
+# 判断有无版本
+if [ -n "$version" ]; then
+  helm upgrade --install rongke-prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace -f values_temp.yaml --version $version
+else
+  helm upgrade --install rongke-prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace -f values_temp.yaml
+fi
 
 echo "prometheus agent installed"
 
