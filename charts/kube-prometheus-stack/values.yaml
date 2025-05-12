@@ -545,7 +545,7 @@ alertmanager:
     storage:
       volumeClaimTemplate:
         spec:
-          storageClassName: P_STORAGE_CLASS_P
+          storageClassName: nfs-prom
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
@@ -768,7 +768,7 @@ grafana:
   persistence:
     enabled: true
     type: pvc
-    storageClassName: "P_STORAGE_CLASS_P"
+    storageClassName: "nfs-prom"
     accessModes:
       - ReadWriteOnce
     size: 20Gi
@@ -2601,7 +2601,7 @@ prometheus:
       ##
       volumeClaimTemplate:
         spec:
-          storageClassName: P_STORAGE_CLASS_P
+          storageClassName: nfs-prom
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
