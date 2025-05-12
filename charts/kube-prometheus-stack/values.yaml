@@ -1484,6 +1484,8 @@ kubeStateMetrics:
 ## Configuration for kube-state-metrics subchart
 ##
 kube-state-metrics:
+  image:
+    registry: docker-proxy-quay.geekz.cn:81
   namespaceOverride: ""
   rbac:
     create: true
