@@ -4257,7 +4257,7 @@ prometheus:
     ## The remote_write spec configuration for Prometheus.
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#remotewritespec
     remoteWrite:
-      - url: https://prometheus.geekz.cn:81/api/v1/write
+      - url: P_REMOTE_WRITE_P/api/v1/write
         writeRelabelConfigs:
           - action: labeldrop
             regex: "prometheus|prometheus_replica"
