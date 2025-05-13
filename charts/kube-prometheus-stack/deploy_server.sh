@@ -29,7 +29,26 @@ echo "prometheus stack installed"
 
 rm -rf values_temp.yaml
 
-# 对中心集群的服务监控进行修改 添加全局cluster标签
-kubectl get servicemonitor -A -o yaml | \
-  yq eval '(.items[].spec.endpoints[].relabelings |= (select(. != null) | map(select(.targetLabel != "cluster")) + [{"targetLabel": "cluster", "replacement": "ecloud"}]))' | \
-  kubectl apply -f -
+
+# 如果服务器有jq
+if command -v jq &> /dev/null
+then
+  echo "jq is installed, modifying ServiceMonitor"
+  # 对所有集群的服务监控进行修改 添加全局cluster标签
+  kubectl get servicemonitor -A -o json | \
+    jq '.items[] | .spec.endpoints |= (map(.relabelings = ((.relabelings // []) | map(select(.targetLabel != "cluster")) + [{"targetLabel": "cluster", "replacement": "ecloud"}])))' | \
+    kubectl apply -f -
+else
+  echo "jq is not installed, skipping ServiceMonitor modification"
+  # 对中心集群的服务监控进行修改 添加全局cluster标签
+  kubectl get servicemonitor -A -o yaml | \
+    yq eval '(.items[].spec.endpoints[].relabelings |= (select(. != null) | map(select(.targetLabel != "cluster")) + [{"targetLabel": "cluster", "replacement": "ecloud"}]))' | \
+    kubectl apply -f -
+
+fi
+
+
+
+
+
+
