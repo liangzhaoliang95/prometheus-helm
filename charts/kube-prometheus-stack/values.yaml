@@ -191,20 +191,39 @@ alertmanager:
           - 'severity = info'
         equal:
           - 'namespace'
+      - target_matchers:
+          - 'alertname = InfoInhibitor'
     route:
-      group_by: ['namespace']
-      group_wait: 30s
-      group_interval: 5m
-      repeat_interval: 12h
-      receiver: 'null'
+      group_by: ['alertname', 'severity', 'cluster']  # 按这三个标签分组
+      group_wait: 10s
+      group_interval: 1m
+      repeat_interval: 1h
+      receiver: 'wecom.webhook'  # 默认接收器（但会被路由规则覆盖）
       routes:
-      - receiver: 'null'
-        matchers:
-          - alertname =~ "InfoInhibitor|Watchdog"
+        # 1. 静默 Watchdog 告警（发送到 null 接收器）
+        - receiver: 'null'
+          matchers:
+            - alertname = "Watchdog"
+
+        # 2. 只处理 severity=critical 的告警（发送到 wecom.webhook）
+        - receiver: 'wecom.webhook'
+          matchers:
+            - severity = "critical"
+          continue: false  # 匹配后不再继续后续路由
+
+        # 3. 其他告警默认静默（可选）
+        - receiver: 'null'
+          matchers:
+            - severity != "critical"  # 非 critical 告警静默
+          continue: false
     receivers:
-    - name: 'null'
+      - name: 'null'
+      - name: "wecom.webhook"
+        webhook_configs:
+          - send_resolved: true
+            url: "http://alertmanager-webhook-adapter:80/webhook/send?channel_type=weixin&token=8f3be4a0-8cf1-4731-97a5-dc244f70d44d"
     templates:
-    - '/etc/alertmanager/config/*.tmpl'
+      - '/etc/alertmanager/config/*.tmpl'
 
   ## Pass the Alertmanager configuration directives through Helm's templating
   ## engine. If the Alertmanager configuration contains Alertmanager templates,
