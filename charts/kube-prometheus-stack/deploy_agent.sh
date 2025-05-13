@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-storageClass=$1
-clusterLabel=$2
-version=$3
+storageClass=$1 # nfs-prom
+clusterLabel=$2 # rongke-lxz
+remoteWrite=$3 # https://prometheus.geekz.cn:81
+version=$4 # 38.0.3
 
 helm repo add prometheus-community https://helm.geekz.cn:81/repository/helm-proxy
 helm repo update
@@ -16,10 +17,14 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   sed -i "" "s/P_STORAGE_CLASS_P/$storageClass/g" values_temp.yaml
   # 调整全局标签集群名称
   sed -i "" "s/P_LABEL_CLUSTER_P/$clusterLabel/g" values_temp.yaml
+  # 远程写入地址
+  sed -i "" "s/P_REMOTE_WRITE_P/$remoteWrite/g" values_temp.yaml
 else
   sed -i "s/P_STORAGE_CLASS_P/$storageClass/g" values_temp.yaml
   # 调整全局标签集群名称
   sed -i "s/P_LABEL_CLUSTER_P/$clusterLabel/g" values_temp.yaml
+  # 远程写入地址
+  sed -i "s/P_REMOTE_WRITE_P/$remoteWrite/g" values_temp.yaml
 fi
 
 echo "start installing prometheus agent"
@@ -30,6 +35,13 @@ if [ -n "$version" ]; then
 else
   helm upgrade --install rongke-prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace -f values_temp.yaml
 fi
+
+# 判断是否安装成功
+if [ $? -ne 0 ]; then
+  echo "prometheus agent installation failed"
+  exit 1
+fi
+
 
 echo "prometheus agent installed"
 
