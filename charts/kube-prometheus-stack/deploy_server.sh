@@ -32,6 +32,12 @@ else
   helm upgrade --install rongke-prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace -f values_temp.yaml
 fi
 
+# 判断是否安装成功
+if [ $? -ne 0 ]; then
+  echo "prometheus stack installation failed"
+  exit 1
+fi
+
 echo "prometheus stack installed"
 
 rm -rf values_temp.yaml
