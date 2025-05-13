@@ -719,6 +719,8 @@ alertmanager:
 ##
 grafana:
   image:
+    repository: docker-proxy.geekz.cn:81/grafana/grafana
+    tag: 11.6.1
     registry: docker-proxy.geekz.cn:81
   enabled: true
   namespaceOverride: ""
@@ -793,9 +795,18 @@ grafana:
     size: 20Gi
     finalizers:
       - kubernetes.io/pvc-protection
+
+  initChownData:
+    image:
+      repository: docker-proxy.geekz.cn:81/busybox
+      tag: "1.31.1"
+      sha: ""
+      pullPolicy: IfNotPresent
+
   sidecar:
     image:
-      registry: docker-proxy-quay.geekz.cn:81
+      repository: docker-proxy-quay.geekz.cn:81/kiwigrid/k8s-sidecar
+      tag: 1.30.0
     dashboards:
       enabled: true
       label: grafana_dashboard
