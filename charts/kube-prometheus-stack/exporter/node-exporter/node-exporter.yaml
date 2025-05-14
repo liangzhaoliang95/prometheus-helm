@@ -6,8 +6,9 @@ metadata:
   namespace: monitoring         # 建议与 Prometheus Operator 同命名空间
 subsets:
   - addresses:
-      - ip: 192.168.10.2          # 替换为第一台节点的内网 IP
-      - ip: 192.168.10.12          # 替换为第二台节点的内网 IP
+      - ip: 192.168.15.20          # 替换为第一台节点的内网 IP
+      - ip: 192.168.15.21          # 替换为第二台节点的内网 IP
+      - ip: 192.168.15.22          # 替换为第二台节点的内网 IP
     ports:
       - name: http-metrics
         port: 9100                 # node-exporter 默认端口
@@ -46,7 +47,7 @@ spec:
       path: /metrics
       relabelings:
         - action: replace
-          replacement: lxz
+          replacement: rongke-xhsy
           targetLabel: cluster
   selector:
     matchLabels:
