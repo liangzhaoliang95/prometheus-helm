@@ -302,6 +302,7 @@ defaultRules:
   ## Disabled PrometheusRule alerts
   disabled:
     PrometheusRemoteStorageFailures: true
+    PrometheusNotConnectedToAlertmanagers: true
   # KubeAPIDown: true
   # NodeRAIDDegraded: true
 
