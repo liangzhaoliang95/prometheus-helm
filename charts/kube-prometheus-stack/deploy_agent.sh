@@ -2,10 +2,10 @@
 
 storageClass=$1 # nfs-prom
 clusterLabel=$2 # rongke-lxz
-remoteWrite=$3 # https://prometheus.geekz.cn:81
+remoteWrite=$3 # https://rongke-prometheus.plaso.cn
 version=$4 # 38.0.3
 
-helm repo add prometheus-community https://helm.geekz.cn:81/repository/helm-proxy
+helm repo add prometheus-community https://helm.geekz.cn:81/prometheus-community/helm-charts
 helm repo update
 echo "prometheus-community repo added and updated"
 
