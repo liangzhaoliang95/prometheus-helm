@@ -305,7 +305,8 @@ defaultRules:
     # fsSelector: 'fstype=~"ext[234]|btrfs|xfs|zfs"'
 
   ## Disabled PrometheusRule alerts
-  disabled: {}
+  disabled:
+    PrometheusRemoteStorageFailures: true
   # KubeAPIDown: true
   # NodeRAIDDegraded: true
 
