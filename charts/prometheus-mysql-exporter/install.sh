@@ -121,6 +121,8 @@ sed -i '' "s/P_MYSQL_PASSWORD_P/${ESCAPED_PASSWORD}/g" "$TEMP_VALUES"
 sed -i '' "s/P_MYSQL_PORT_P/${MYSQL_PORT}/g" "$TEMP_VALUES"
 
 echo "TEMP_VALUES: $TEMP_VALUES"
+cat "$TEMP_VALUES"
+
 
 # 执行 Helm 安装
 echo ""
