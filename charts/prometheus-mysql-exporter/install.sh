@@ -25,6 +25,35 @@ sed_inplace() {
     fi
 }
 
+# 卸载函数
+function uninstall_exporter() {
+    echo "========================================"
+    echo "卸载 MySQL Exporter..."
+    echo "  Release 名称: $RELEASE_NAME"
+    echo "  命名空间: $NAMESPACE"
+    echo "========================================"
+    
+    # 检查 release 是否存在
+    if helm list -n "$NAMESPACE" | grep -q "^$RELEASE_NAME"; then
+        echo "正在卸载 $RELEASE_NAME..."
+        helm uninstall "$RELEASE_NAME" -n "$NAMESPACE"
+        
+        if [[ $? -eq 0 ]]; then
+            echo "✓ 卸载成功！"
+            echo ""
+            echo "检查剩余资源:"
+            echo "  kubectl get all -n $NAMESPACE -l app.kubernetes.io/instance=$RELEASE_NAME"
+        else
+            echo "✗ 卸载失败！"
+            exit 1
+        fi
+    else
+        echo "⚠️  Release '$RELEASE_NAME' 在命名空间 '$NAMESPACE' 中不存在"
+        echo "可用的 releases:"
+        helm list -n "$NAMESPACE" --short
+    fi
+}
+
 # 帮助信息
 function show_help() {
     cat << EOF
@@ -42,12 +71,18 @@ function show_help() {
     -P, --port PORT          MySQL 端口 (默认: $MYSQL_PORT)
     -n, --namespace NS       Kubernetes 命名空间 (默认: $NAMESPACE)
     -r, --release RELEASE    Helm release 名称 (默认: $RELEASE_NAME)
+    --uninstall              卸载 MySQL Exporter
     --help                   显示此帮助信息
 
 示例:
+    # 安装
     $0 -h 172.17.3.189 -p "mypassword"
     $0 --host 172.17.3.189 --user root --password "mypassword" --port 3306
     $0 -h 172.17.3.189 -p "mypassword" -c prod-cluster -n monitoring
+    
+    # 卸载
+    $0 --uninstall
+    $0 --uninstall -r rongke-mysql-exporter -n monitoring
 
 EOF
     exit 0
@@ -84,6 +119,10 @@ while [[ $# -gt 0 ]]; do
             RELEASE_NAME="$2"
             shift 2
             ;;
+        --uninstall)
+            UNINSTALL_MODE=true
+            shift
+            ;;
         --help)
             show_help
             ;;
@@ -94,6 +133,12 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
+
+# 如果是卸载模式，直接执行卸载
+if [[ "$UNINSTALL_MODE" == "true" ]]; then
+    uninstall_exporter
+    exit 0
+fi
 
 # 验证必需参数
 if [[ -z "$MYSQL_HOST" ]]; then
