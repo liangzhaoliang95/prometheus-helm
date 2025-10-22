@@ -12,6 +12,19 @@ MYSQL_PORT="3306"
 RELEASE_NAME="rongke-mysql-exporter"
 NAMESPACE="monitoring"
 
+# 跨平台 sed 函数（兼容 Mac BSD sed 和 Linux GNU sed）
+sed_inplace() {
+    local pattern="$1"
+    local file="$2"
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        # Mac (BSD sed) 需要提供备份后缀参数
+        sed -i '' "$pattern" "$file"
+    else
+        # Linux (GNU sed)
+        sed -i "$pattern" "$file"
+    fi
+}
+
 # 帮助信息
 function show_help() {
     cat << EOF
@@ -115,9 +128,7 @@ cp values.yaml "$TEMP_VALUES"
 sed -i '' "s/P_LABEL_CLUSTER_P/${CLUSTER_LABEL}/g" "$TEMP_VALUES"
 sed -i '' "s/P_MYSQL_HOST_P/${MYSQL_HOST}/g" "$TEMP_VALUES"
 sed -i '' "s/P_MYSQL_USER_P/${MYSQL_USER}/g" "$TEMP_VALUES"
-# 转义密码中的特殊字符
-ESCAPED_PASSWORD=$(echo "$MYSQL_PASSWORD" | sed 's/[&/\]/\\&/g')
-sed -i '' "s/P_MYSQL_PASSWORD_P/${ESCAPED_PASSWORD}/g" "$TEMP_VALUES"
+sed -i '' "s/P_MYSQL_PASSWORD_P/${MYSQL_PASSWORD}/g" "$TEMP_VALUES"
 sed -i '' "s/P_MYSQL_PORT_P/${MYSQL_PORT}/g" "$TEMP_VALUES"
 
 echo "TEMP_VALUES: $TEMP_VALUES"
