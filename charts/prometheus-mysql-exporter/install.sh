@@ -124,12 +124,15 @@ TEMP_VALUES="values_temp_$(date +%s).yaml"
 
 cp values.yaml "$TEMP_VALUES"
 
-# 替换配置参数
-sed -i '' "s/P_LABEL_CLUSTER_P/${CLUSTER_LABEL}/g" "$TEMP_VALUES"
-sed -i '' "s/P_MYSQL_HOST_P/${MYSQL_HOST}/g" "$TEMP_VALUES"
-sed -i '' "s/P_MYSQL_USER_P/${MYSQL_USER}/g" "$TEMP_VALUES"
-sed -i '' "s/P_MYSQL_PASSWORD_P/${MYSQL_PASSWORD}/g" "$TEMP_VALUES"
-sed -i '' "s/P_MYSQL_PORT_P/${MYSQL_PORT}/g" "$TEMP_VALUES"
+# 替换配置参数（使用 | 作为分隔符，避免特殊字符冲突）
+# 注意：先转义变量中可能影响 sed 的特殊字符 & \ /
+ESCAPED_PASSWORD=$(printf '%s\n' "$MYSQL_PASSWORD" | sed 's/[&\/\\]/\\&/g')
+
+sed_inplace "s|P_LABEL_CLUSTER_P|${CLUSTER_LABEL}|g" "$TEMP_VALUES"
+sed_inplace "s|P_MYSQL_HOST_P|${MYSQL_HOST}|g" "$TEMP_VALUES"
+sed_inplace "s|P_MYSQL_USER_P|${MYSQL_USER}|g" "$TEMP_VALUES"
+sed_inplace "s|P_MYSQL_PASSWORD_P|${ESCAPED_PASSWORD}|g" "$TEMP_VALUES"
+sed_inplace "s|P_MYSQL_PORT_P|${MYSQL_PORT}|g" "$TEMP_VALUES"
 
 echo "TEMP_VALUES: $TEMP_VALUES"
 cat "$TEMP_VALUES"
