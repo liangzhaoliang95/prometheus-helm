@@ -3,6 +3,7 @@
 # bash install.sh -h 172.17.3.189 -p "mypassword" -c rongke-private -n monitoring -r rongke-mysql-exporter
 
 # 默认值
+# bash install.sh -h 10.115.0.143 -p "11#Plaso1865(*" -c rongke-gcjyj
 CLUSTER_LABEL="rongke-private"
 MYSQL_HOST=""
 MYSQL_USER="root"
@@ -118,6 +119,8 @@ sed -i '' "s/P_MYSQL_USER_P/${MYSQL_USER}/g" "$TEMP_VALUES"
 ESCAPED_PASSWORD=$(echo "$MYSQL_PASSWORD" | sed 's/[&/\]/\\&/g')
 sed -i '' "s/P_MYSQL_PASSWORD_P/${ESCAPED_PASSWORD}/g" "$TEMP_VALUES"
 sed -i '' "s/P_MYSQL_PORT_P/${MYSQL_PORT}/g" "$TEMP_VALUES"
+
+echo "TEMP_VALUES: $TEMP_VALUES"
 
 # 执行 Helm 安装
 echo ""
