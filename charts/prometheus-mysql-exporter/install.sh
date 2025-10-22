@@ -170,14 +170,31 @@ TEMP_VALUES="values_temp_$(date +%s).yaml"
 cp values.yaml "$TEMP_VALUES"
 
 # 替换配置参数（使用 | 作为分隔符，避免特殊字符冲突）
-# 注意：先转义变量中可能影响 sed 的特殊字符 & \ /
-ESCAPED_PASSWORD=$(printf '%s\n' "$MYSQL_PASSWORD" | sed 's/[&\/\\]/\\&/g')
+# 转义函数：转义 sed 替换中的特殊字符
+escape_sed_replacement() {
+    printf '%s\n' "$1" | sed 's/[&\/\\]/\\&/g'
+}
 
-sed_inplace "s|P_LABEL_CLUSTER_P|${CLUSTER_LABEL}|g" "$TEMP_VALUES"
-sed_inplace "s|P_MYSQL_HOST_P|${MYSQL_HOST}|g" "$TEMP_VALUES"
-sed_inplace "s|P_MYSQL_USER_P|${MYSQL_USER}|g" "$TEMP_VALUES"
+# 转义函数：转义 YAML 双引号字符串中的特殊字符
+escape_yaml_string() {
+    # 在 YAML 双引号字符串中，需要转义 \ 和 "
+    printf '%s\n' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
+}
+
+# 先进行 YAML 转义，再进行 sed 转义
+YAML_PASSWORD=$(escape_yaml_string "$MYSQL_PASSWORD")
+ESCAPED_PASSWORD=$(escape_sed_replacement "$YAML_PASSWORD")
+
+ESCAPED_CLUSTER=$(escape_sed_replacement "$CLUSTER_LABEL")
+ESCAPED_HOST=$(escape_sed_replacement "$MYSQL_HOST")
+ESCAPED_USER=$(escape_sed_replacement "$MYSQL_USER")
+ESCAPED_PORT=$(escape_sed_replacement "$MYSQL_PORT")
+
+sed_inplace "s|P_LABEL_CLUSTER_P|${ESCAPED_CLUSTER}|g" "$TEMP_VALUES"
+sed_inplace "s|P_MYSQL_HOST_P|${ESCAPED_HOST}|g" "$TEMP_VALUES"
+sed_inplace "s|P_MYSQL_USER_P|${ESCAPED_USER}|g" "$TEMP_VALUES"
 sed_inplace "s|P_MYSQL_PASSWORD_P|${ESCAPED_PASSWORD}|g" "$TEMP_VALUES"
-sed_inplace "s|P_MYSQL_PORT_P|${MYSQL_PORT}|g" "$TEMP_VALUES"
+sed_inplace "s|P_MYSQL_PORT_P|${ESCAPED_PORT}|g" "$TEMP_VALUES"
 
 echo "TEMP_VALUES: $TEMP_VALUES"
 cat "$TEMP_VALUES"
