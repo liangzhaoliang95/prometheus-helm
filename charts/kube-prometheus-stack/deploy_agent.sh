@@ -3,7 +3,7 @@
 storageClass=$1 # nfs-prom
 clusterLabel=$2 # rongke-lxz
 remoteWrite=$3 # https://rongke-prometheus.plaso.cn
-version=$4 # 38.0.3
+version=$4 # 78.4.0
 
 helm repo add prometheus-community https://helm.geekz.cn:81/prometheus-community/helm-charts/
 helm repo update
