@@ -3947,8 +3947,8 @@ prometheus:
     ## Allows setting additional arguments for the Prometheus container
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#monitoring.coreos.com/v1.Prometheus
     additionalArgs:
-      - name="web.config.file"
-        value="/etc/prometheus/secrets/prometheus-remote-auth/web-config.yaml"
+      - name: web.config.file
+        value: /etc/prometheus/secrets/prometheus-remote-auth/web-config.yaml
 
     ## File to which scrape failures are logged.
     ## Reloading the configuration will reopen the file.

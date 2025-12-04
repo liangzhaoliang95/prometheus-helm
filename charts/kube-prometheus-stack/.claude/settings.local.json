@@ -1,0 +1,7 @@
+{
+  "enabledMcpjsonServers": [
+    "mysql",
+    "chrome-devtools"
+  ],
+  "enableAllProjectMcpServers": true
+}
