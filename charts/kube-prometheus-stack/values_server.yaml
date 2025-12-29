@@ -4242,9 +4242,9 @@ prometheus:
 
     ## Allows setting additional arguments for the Prometheus container
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#monitoring.coreos.com/v1.Prometheus
-    additionalArgs:
-      - name: web.config.file
-        value: /etc/prometheus/secrets/prometheus-remote-auth/web-config.yaml
+    #additionalArgs:
+    #  - name: web.config.file
+    #    value: /etc/prometheus/secrets/prometheus-remote-auth/web-config.yaml
 
     ## Convert all classic histograms to native histograms with custom buckets.
     ## This corresponds to the 'convert_classic_histograms_to_nhcb' field in Prometheus configuration.
