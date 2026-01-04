@@ -1,0 +1,22 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    release: rongke-prometheus
+  name: infi-metrics-exporter
+  namespace: monitoring
+spec:
+  endpoints:
+    - interval: 10s
+      path: /metrics/u3
+      port: http
+      relabelings:
+        - action: replace
+          replacement: rongke
+          targetLabel: cluster
+  namespaceSelector:
+    matchNames:
+      - infi-upimesdk-www
+  selector:
+    matchLabels:
+      app: u3gps
