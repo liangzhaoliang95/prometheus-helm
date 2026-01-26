@@ -50,7 +50,7 @@ spec:
       keep_firing_for: "{{ . }}"
       {{- end }}
       labels:
-        severity: {{ dig "KubePodCrashLooping" "severity" "warning" .Values.customRules }}
+        severity: {{ dig "KubePodCrashLooping" "severity" "critical" .Values.customRules }}
       {{- if or .Values.defaultRules.additionalRuleLabels .Values.defaultRules.additionalRuleGroupLabels.kubernetesApps }}
         {{- with .Values.defaultRules.additionalRuleLabels }}
           {{- toYaml . | nindent 8 }}
@@ -99,7 +99,7 @@ spec:
       keep_firing_for: "{{ . }}"
       {{- end }}
       labels:
-        severity: {{ dig "KubePodNotReady" "severity" "warning" .Values.customRules }}
+        severity: {{ dig "KubePodNotReady" "severity" "critical" .Values.customRules }}
       {{- if or .Values.defaultRules.additionalRuleLabels .Values.defaultRules.additionalRuleGroupLabels.kubernetesApps }}
         {{- with .Values.defaultRules.additionalRuleLabels }}
           {{- toYaml . | nindent 8 }}
@@ -179,7 +179,7 @@ spec:
       keep_firing_for: "{{ . }}"
       {{- end }}
       labels:
-        severity: {{ dig "KubeDeploymentReplicasMismatch" "severity" "warning" .Values.customRules }}
+        severity: {{ dig "KubeDeploymentReplicasMismatch" "severity" "critical" .Values.customRules }}
       {{- if or .Values.defaultRules.additionalRuleLabels .Values.defaultRules.additionalRuleGroupLabels.kubernetesApps }}
         {{- with .Values.defaultRules.additionalRuleLabels }}
           {{- toYaml . | nindent 8 }}

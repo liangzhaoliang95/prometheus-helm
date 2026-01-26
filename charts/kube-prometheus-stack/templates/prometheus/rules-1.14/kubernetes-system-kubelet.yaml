@@ -53,7 +53,7 @@ spec:
       keep_firing_for: "{{ . }}"
       {{- end }}
       labels:
-        severity: {{ dig "KubeNodeNotReady" "severity" "warning" .Values.customRules }}
+        severity: {{ dig "KubeNodeNotReady" "severity" "critical" .Values.customRules }}
       {{- if or .Values.defaultRules.additionalRuleLabels .Values.defaultRules.additionalRuleGroupLabels.kubernetesSystem }}
         {{- with .Values.defaultRules.additionalRuleLabels }}
           {{- toYaml . | nindent 8 }}

@@ -48,7 +48,7 @@ spec:
       keep_firing_for: "{{ . }}"
       {{- end }}
       labels:
-        severity: {{ dig "TargetDown" "severity" "warning" .Values.customRules }}
+        severity: {{ dig "TargetDown" "severity" "critical" .Values.customRules }}
       {{- if or .Values.defaultRules.additionalRuleLabels .Values.defaultRules.additionalRuleGroupLabels.general }}
         {{- with .Values.defaultRules.additionalRuleLabels }}
           {{- toYaml . | nindent 8 }}
