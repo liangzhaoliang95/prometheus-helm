@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+# bash deploy_agent.sh nfs-prom infi-websdk-fpc "https://rongke-prometheus.plaso.cn"
 storageClass=$1 # nfs-prom
 clusterLabel=$2 # rongke-lxz
 remoteWrite=$3 # https://rongke-prometheus.plaso.cn

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+# bash deploy_server.sh nfs-prom rongke-prom-center
 storageClass=$1
 clusterLabel=$2
 version=$3
