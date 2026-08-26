@@ -1635,7 +1635,7 @@ grafana:
 
   initChownData:
     image:
-      registry: docker-proxy.geekz.cn:81
+      registry: docker-hub.geekz.cn:81
 
   extraConfigmapMounts: []
   # - name: certs-configmap

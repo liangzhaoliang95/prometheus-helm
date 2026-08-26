@@ -41,7 +41,7 @@ crds:
     forceConflicts: false
     image:
       busybox:
-        registry: docker-proxy.geekz.cn:81
+        registry: docker-hub.geekz.cn:81
         repository: busybox
         tag: "latest"
         sha: ""
@@ -1229,7 +1229,7 @@ alertmanager:
 ##
 grafana:
   image:
-    registry: docker-proxy.geekz.cn:81
+    registry: docker-hub.geekz.cn:81
   enabled: false
   namespaceOverride: ""
 
@@ -1449,7 +1449,7 @@ grafana:
 
   initChownData:
     image:
-      registry: docker-proxy.geekz.cn:81
+      registry: docker-hub.geekz.cn:81
 
   extraConfigmapMounts: []
   # - name: certs-configmap
