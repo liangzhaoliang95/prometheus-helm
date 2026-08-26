@@ -2682,8 +2682,8 @@ kubeStateMetrics:
 kube-state-metrics:
   ## set to true to add the release label so scraping of the servicemonitor with kube-prometheus-stack works out of the box
   releaseLabel: true
-  #image:
-  #  registry: docker-proxy-k8s.geekz.cn:81
+  image:
+    registry: docker-proxy-k8s.geekz.cn:81
   ## Enable scraping via kubernetes-service-endpoints
   ## Disabled by default as we service monitor is enabled below
   ##
